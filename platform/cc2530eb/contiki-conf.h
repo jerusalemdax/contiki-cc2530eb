@@ -116,9 +116,6 @@
  * It is harmless to #define XYZ 1
  * even if the sensor is not present on our device
  */
-#ifndef BUTTON_SENSOR_CONF_ON
-#define BUTTON_SENSOR_CONF_ON   1  /* Buttons */
-#endif
 
 /* B2 on the cc2531 USB stick can be a reset button or a general-purpose one */
 #ifndef CC2531_CONF_B2_REBOOTS
@@ -128,10 +125,19 @@
 /* ADC - Turning this off will disable everything below */
 #ifndef ADC_SENSOR_CONF_ON
 #define ADC_SENSOR_CONF_ON      1
+
+#ifndef BUTTON_SENSOR_CONF_ON
+#define BUTTON_SENSOR_CONF_ON   1  /* Buttons */
 #endif
+
+#ifndef JOYSTICK_SENSOR_CONF_ON
+#define JOYSTICK_SENSOR_CONF_ON   1  /* Joystick */
+#endif
+
 #define TEMP_SENSOR_CONF_ON     1  /* Temperature */
 #define VDD_SENSOR_CONF_ON      1  /* Supply Voltage */
 #define BATTERY_SENSOR_CONF_ON  0  /* Battery */
+#endif
 
 /* Low Power Modes - We only support PM0/Idle and PM1 */
 #ifndef LPM_CONF_MODE

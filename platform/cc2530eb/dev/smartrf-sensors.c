@@ -39,19 +39,20 @@
 
 #include "dev/button-sensor.h"
 #include "dev/adc-sensor.h"
+#include "dev/joystick-sensor.h"
 #include "sys/energest.h"
 
 const struct sensors_sensor *sensors[] = {
 #if ADC_SENSOR_ON
-  &adc_sensor,
+    &adc_sensor,
 #endif
 #if BUTTON_SENSOR_ON
-  &button_1_sensor,
-#if MODEL_CC2531
-  &button_2_sensor,
+    &button_1_sensor,
 #endif
+#if JOYSTICK_SENSOR_ON
+    &joystick_sensor,
 #endif
-  0
+    0
 };
 
 unsigned char sensors_flags[(sizeof(sensors) / sizeof(struct sensors_sensor *))];

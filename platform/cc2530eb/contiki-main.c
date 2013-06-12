@@ -14,6 +14,7 @@
 #include "dev/port2.h"
 #include "dev/lpm.h"
 #include "dev/button-sensor.h"
+#include "dev/joystick-sensor.h"
 #include "dev/adc-sensor.h"
 #include "dev/leds-arch.h"
 #include "net/rime.h"
@@ -242,10 +243,15 @@ main(void) CC_NON_BANKED
   netstack_init();
   set_rime_addr();
 
-#if BUTTON_SENSOR_ON || ADC_SENSOR_ON
+#if ADC_SENSOR_ON
   process_start(&sensors_process, NULL);
-  BUTTON_SENSOR_ACTIVATE();
   ADC_SENSOR_ACTIVATE();
+#if BUTTON_SENSOR_ON
+  BUTTON_SENSOR_ACTIVATE();
+#endif
+#if JOYSTICK_SENSOR_ON
+  JOYSTICK_SENSOR_ACTIVATE();
+#endif
 #endif
 
 #if UIP_CONF_IPV6
