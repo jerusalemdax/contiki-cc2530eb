@@ -3,6 +3,7 @@
 #include "adc-sensor.h"
 #include "joystick-sensor.h"
 #include "dev/port.h"
+#include <stdio.h>
 
 #if JOYSTICK_SENSOR_ON
 
@@ -87,7 +88,7 @@ configure(int type, int value)
 {
     switch(type) {
         case SENSORS_HW_INIT:
-            PORT_IRQ_EDGE_FALL(JOYSTICK_PORT, JOYSTICK_PIN);
+            PORT_IRQ_EDGE_RISE(JOYSTICK_PORT, JOYSTICK_PIN);
             PORT_FUNC_GPIO(JOYSTICK_PORT, JOYSTICK_PIN);
             PORT_DIR_INPUT(JOYSTICK_PORT, JOYSTICK_PIN);
             APCFG |= 0x40; /* ENABLE P0_6 Channels */
