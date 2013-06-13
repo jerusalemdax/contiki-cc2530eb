@@ -44,9 +44,9 @@ void
 uip_debug_ipaddr_print(const uip_ipaddr_t *addr)
 {
 #if UIP_CONF_IPV6
-  uint16_t a;
-  unsigned int i;
-  int f;
+  static uint16_t a;
+  static unsigned int i;
+  static int f;
   for(i = 0, f = 0; i < sizeof(uip_ipaddr_t); i += 2) {
     a = (addr->u8[i] << 8) + addr->u8[i + 1];
     if(a == 0 && f >= 0) {

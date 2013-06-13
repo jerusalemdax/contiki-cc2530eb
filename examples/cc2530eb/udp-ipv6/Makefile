@@ -8,7 +8,7 @@ PROJECT_SOURCEFILES += ping6.c
 
 CONTIKI_PROJECT = client server
 
-all: $(CONTIKI_PROJECT) 
+all: $(CONTIKI_PROJECT)
 
 CONTIKI = ../../..
 

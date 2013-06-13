@@ -308,9 +308,9 @@ udp_attach(struct uip_udp_conn *conn,
 struct uip_udp_conn *
 udp_new(const uip_ipaddr_t *ripaddr, uint16_t port, void *appstate)
 {
-  struct uip_udp_conn *c;
-  uip_udp_appstate_t *s;
-  
+  static struct uip_udp_conn *c;
+  static uip_udp_appstate_t *s;
+
   c = uip_udp_new(ripaddr, port);
   if(c == NULL) {
     return NULL;
@@ -326,7 +326,7 @@ udp_new(const uip_ipaddr_t *ripaddr, uint16_t port, void *appstate)
 struct uip_udp_conn *
 udp_broadcast_new(uint16_t port, void *appstate)
 {
-  uip_ipaddr_t addr;
+  static uip_ipaddr_t addr;
   struct uip_udp_conn *conn;
 
 #if UIP_CONF_IPV6

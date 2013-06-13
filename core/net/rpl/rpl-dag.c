@@ -201,9 +201,9 @@ get_dag(uint8_t instance_id, uip_ipaddr_t *dag_id)
 rpl_dag_t *
 rpl_set_root(uint8_t instance_id, uip_ipaddr_t *dag_id)
 {
-  rpl_dag_t *dag;
-  rpl_instance_t *instance;
-  uint8_t version;
+  static rpl_dag_t *dag;
+  static rpl_instance_t *instance;
+  static uint8_t version;
 
   version = RPL_LOLLIPOP_INIT;
   dag = get_dag(instance_id, dag_id);
@@ -299,8 +299,8 @@ set_ip_from_prefix(uip_ipaddr_t *ipaddr, rpl_prefix_t *prefix)
 static void
 check_prefix(rpl_prefix_t *last_prefix, rpl_prefix_t *new_prefix)
 {
-  uip_ipaddr_t ipaddr;
-  uip_ds6_addr_t *rep;
+  static uip_ipaddr_t ipaddr;
+  static uip_ds6_addr_t *rep;
 
   if(last_prefix != NULL && new_prefix != NULL &&
      last_prefix->length == new_prefix->length &&
@@ -320,7 +320,7 @@ check_prefix(rpl_prefix_t *last_prefix, rpl_prefix_t *new_prefix)
       uip_ds6_addr_rm(rep);
     }
   }
-  
+
   if(new_prefix != NULL) {
     set_ip_from_prefix(&ipaddr, new_prefix);
     if(uip_ds6_addr_lookup(&ipaddr) == NULL) {
@@ -742,7 +742,7 @@ rpl_move_parent(rpl_dag_t *dag_src, rpl_dag_t *dag_dst, rpl_parent_t *parent)
 rpl_dag_t *
 rpl_get_any_dag(void)
 {
-  int i;
+  static int i;
 
   for(i = 0; i < RPL_MAX_INSTANCES; ++i) {
     if(instance_table[i].used && instance_table[i].current_dag->joined) {

@@ -531,7 +531,7 @@ struct uip_udp_conn *
 uip_udp_new(const uip_ipaddr_t *ripaddr, uint16_t rport)
 {
   register struct uip_udp_conn *conn;
-  
+
   /* Find an unused local port. */
  again:
   ++lastport;
@@ -539,7 +539,7 @@ uip_udp_new(const uip_ipaddr_t *ripaddr, uint16_t rport)
   if(lastport >= 32000) {
     lastport = 4096;
   }
-  
+
   for(c = 0; c < UIP_UDP_CONNS; ++c) {
     if(uip_udp_conns[c].lport == uip_htons(lastport)) {
       goto again;
@@ -557,7 +557,7 @@ uip_udp_new(const uip_ipaddr_t *ripaddr, uint16_t rport)
   if(conn == 0) {
     return 0;
   }
-  
+
   conn->lport = UIP_HTONS(lastport);
   conn->rport = rport;
   if(ripaddr == NULL) {
@@ -566,7 +566,7 @@ uip_udp_new(const uip_ipaddr_t *ripaddr, uint16_t rport)
     uip_ipaddr_copy(&conn->ripaddr, ripaddr);
   }
   conn->ttl = uip_ds6_if.cur_hop_limit;
-  
+
   return conn;
 }
 #endif /* UIP_UDP */

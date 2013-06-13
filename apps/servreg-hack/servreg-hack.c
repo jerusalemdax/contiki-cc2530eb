@@ -131,8 +131,8 @@ servreg_hack_init(void)
 void
 servreg_hack_register(servreg_hack_id_t id, const uip_ipaddr_t *addr)
 {
-  servreg_hack_item_t *t;
-  struct servreg_hack_registration *r;
+  static servreg_hack_item_t *t;
+  static struct servreg_hack_registration *r;
   /* Walk through list, see if we already have a service ID
      registered. If not, allocate a new registration and put it on our
      list. If we cannot allocate a service registration, we reuse one
@@ -279,16 +279,16 @@ handle_incoming_reg(const uip_ipaddr_t *owner, servreg_hack_id_t id, uint8_t seq
 static void
 send_udp_packet(struct uip_udp_conn *conn)
 {
-  int numregs;
-  uint8_t buf[MAX_BUFSIZE];
-  int bufptr;
-  servreg_hack_item_t *t;
+  static int numregs;
+  static uint8_t buf[MAX_BUFSIZE];
+  static int bufptr;
+  static servreg_hack_item_t *t;
 
   buf[MSG_FLAGS_OFFSET]   = 0;
 
   numregs = 0;
   bufptr = MSG_ADDRS_OFFSET;
-  
+
   for(t = list_head(own_services);
       (bufptr + MSG_ADDRS_LEN <= MAX_BUFSIZE) && t != NULL;
       t = list_item_next(t)) {
