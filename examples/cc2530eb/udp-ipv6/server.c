@@ -60,13 +60,8 @@ static uip_ipaddr_t ipaddr;
 #endif
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_server_process, "UDP server process");
-#if BUTTON_SENSOR_ON
-PROCESS_NAME(ping6_process);
-AUTOSTART_PROCESSES(&udp_server_process, &ping6_process);
-#else
 AUTOSTART_PROCESSES(&udp_server_process);
-#endif
-/*---------------------------------------------------------------------------*/
+----------------------------------------------------------------------*/
 static void
 tcpip_handler(void)
 {
