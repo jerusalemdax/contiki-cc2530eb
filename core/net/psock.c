@@ -194,7 +194,7 @@ PT_THREAD(psock_send(CC_REGISTER_ARG struct psock *s, const uint8_t *buf,
   }
 
   s->state = STATE_NONE;
-  
+
   PT_END(&s->psockpt);
 }
 /*---------------------------------------------------------------------------*/
@@ -214,7 +214,7 @@ PT_THREAD(psock_generator_send(CC_REGISTER_ARG struct psock *s,
      uip_appdata buffer. */
     s->sendlen = generate(arg);
     s->sendptr = uip_appdata;
-    
+
     if(s->sendlen > uip_mss()) {
       uip_send(s->sendptr, uip_mss());
     } else {
@@ -226,9 +226,9 @@ PT_THREAD(psock_generator_send(CC_REGISTER_ARG struct psock *s,
  // if (!s->sendlen) break;   //useful debugging aid
     PT_YIELD_UNTIL(&s->psockpt, uip_acked() || uip_rexmit());
   } while(!uip_acked());
-  
+
   s->state = STATE_NONE;
-  
+
   PT_END(&s->psockpt);
 }
 /*---------------------------------------------------------------------------*/
@@ -263,7 +263,7 @@ PT_THREAD(psock_readto(CC_REGISTER_ARG struct psock *psock, unsigned char c))
   PT_BEGIN(&psock->psockpt);
 
   buf_setup(&psock->buf, psock->bufptr, psock->bufsize);
-  
+
   /* XXX: Should add buf_checkmarker() before do{} loop, if
      incoming data has been handled while waiting for a write. */
 
@@ -277,7 +277,7 @@ PT_THREAD(psock_readto(CC_REGISTER_ARG struct psock *psock, unsigned char c))
   } while((buf_bufto(&psock->buf, c,
 		     &psock->readptr,
 		     &psock->readlen) & BUF_FOUND) == 0);
-  
+
   if(psock_datalen(psock) == 0) {
     psock->state = STATE_NONE;
     PT_RESTART(&psock->psockpt);

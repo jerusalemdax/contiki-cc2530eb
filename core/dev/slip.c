@@ -170,9 +170,9 @@ slip_poll_handler(uint8_t *outbuf, uint16_t blen)
        && memcmp(&rxbuf[begin], "CLIENT", 6) == 0) {
       state = STATE_TWOPACKETS;	/* Interrupts do nothing. */
       memset(&rxbuf[begin], 0x0, 6);
-      
+
       rxbuf_init();
-      
+
       for(i = 0; i < 13; i++) {
 	slip_arch_writeb("CLIENTSERVER\300"[i]);
       }
@@ -258,7 +258,7 @@ PROCESS_THREAD(slip_process, ev, data)
 
   while(1) {
     PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
-    
+
     slip_active = 1;
 
     /* Move packet from rxbuf to buffer provided by uIP. */

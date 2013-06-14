@@ -392,10 +392,10 @@ eventhandler(process_event_t ev, process_data_t data)
         }
         ++l;
       }
-	 
+
       {
         register struct uip_conn *cptr;
-	    
+
         for(cptr = &uip_conns[0]; cptr < &uip_conns[UIP_CONNS]; ++cptr) {
           if(cptr->appstate.p == p) {
             cptr->appstate.p = PROCESS_NONE;
@@ -448,7 +448,7 @@ eventhandler(process_event_t ev, process_data_t data)
           uip_fw_periodic();
 #endif /* UIP_CONF_IP_FORWARD */
         }
-        
+
 #if UIP_CONF_IPV6
 #if UIP_CONF_IPV6_REASSEMBLY
         /*
@@ -484,7 +484,7 @@ eventhandler(process_event_t ev, process_data_t data)
 #endif /* UIP_CONF_IPV6 */
       }
       break;
-	 
+
 #if UIP_TCP
     case TCP_POLL:
       if(data != NULL) {
@@ -575,7 +575,7 @@ tcpip_ipv6_output(void)
       if(locrt == NULL) {
         if((nexthop = uip_ds6_defrt_choose()) == NULL) {
 #ifdef UIP_FALLBACK_INTERFACE
-	  PRINTF("FALLBACK: removing ext hdrs & setting proto %d %d\n", 
+	  PRINTF("FALLBACK: removing ext hdrs & setting proto %d %d\n",
 		 uip_ext_len, *((uint8_t *)UIP_IP_BUF + 40));
 	  if(uip_ext_len > 0) {
 	    extern void remove_ext_hdr(void);
@@ -755,11 +755,11 @@ tcpip_uipcall(void)
 PROCESS_THREAD(tcpip_process, ev, data)
 {
   PROCESS_BEGIN();
-  
+
 #if UIP_TCP
  {
    static unsigned char i;
-   
+
    for(i = 0; i < UIP_LISTENPORTS; ++i) {
      s.listenports[i].port = 0;
    }
@@ -786,7 +786,7 @@ PROCESS_THREAD(tcpip_process, ev, data)
     PROCESS_YIELD();
     eventhandler(ev, data);
   }
-  
+
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
