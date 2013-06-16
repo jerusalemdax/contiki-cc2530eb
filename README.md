@@ -30,5 +30,7 @@ and you may need the cc-tool the flash cc2530 see here http://sourceforge.net/pr
 
 TO compile the source code 
 cd example/cc2530eb/blink-hello
+
 make
+
 cc-tool -v -e -w blink-hello.hex
