@@ -61,7 +61,7 @@ static uip_ipaddr_t ipaddr;
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_server_process, "UDP server process");
 AUTOSTART_PROCESSES(&udp_server_process);
-----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
 static void
 tcpip_handler(void)
 {
