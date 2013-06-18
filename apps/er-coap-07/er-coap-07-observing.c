@@ -60,10 +60,10 @@ LIST(observers_list);
 coap_observer_t *
 coap_add_observer(uip_ipaddr_t *addr, uint16_t port, const uint8_t *token, size_t token_len, const char *url)
 {
+  coap_observer_t *o = memb_alloc(&observers_memb);
+
   /* Remove existing observe relationship, if any. */
   coap_remove_observer_by_url(addr, port, url);
-
-  coap_observer_t *o = memb_alloc(&observers_memb);
 
   if (o)
   {
@@ -238,7 +238,7 @@ coap_observe_handler(resource_t *resource, void *request, void *response)
          * For demonstration purposes only. A subscription should return the same representation as a normal GET.
          * TODO: Comment the following line for any real application.
          */
-        coap_set_payload(coap_res, content, snprintf(content, sizeof(content), "Added %u/%u", list_length(observers_list), COAP_MAX_OBSERVERS));
+        coap_set_payload(coap_res, content, sprintf(content, "Added %u/%u", list_length(observers_list), COAP_MAX_OBSERVERS));
       }
       else
       {

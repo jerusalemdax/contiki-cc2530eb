@@ -148,11 +148,10 @@ rest_invoke_restful_service(void* request, void* response, uint8_t *buffer, uint
 {
   uint8_t found = 0;
   uint8_t allowed = 0;
-
-  PRINTF("rest_invoke_restful_service url /%.*s -->\n", url_len, url);
-
   resource_t* resource = NULL;
   const char *url = NULL;
+
+  PRINTF("rest_invoke_restful_service url /%.*s -->\n", url_len, url);
 
   for (resource = (resource_t*)list_head(restful_services); resource; resource = resource->next)
   {
@@ -160,8 +159,9 @@ rest_invoke_restful_service(void* request, void* response, uint8_t *buffer, uint
     if ((REST.get_url(request, &url)==strlen(resource->url) || (REST.get_url(request, &url)>strlen(resource->url) && (resource->flags & HAS_SUB_RESOURCES)))
         && strncmp(resource->url, url, strlen(resource->url)) == 0)
     {
-      found = 1;
       rest_resource_flags_t method = REST.get_method_type(request);
+
+      found = 1;
 
       PRINTF("method %u, resource->flags %u\n", (uint16_t)method, resource->flags);
 
@@ -197,6 +197,7 @@ rest_invoke_restful_service(void* request, void* response, uint8_t *buffer, uint
 /*-----------------------------------------------------------------------------------*/
 
 PROCESS(rest_manager_process, "Rest Process");
+static periodic_resource_t* periodic_resource = NULL;
 
 PROCESS_THREAD(rest_manager_process, ev, data)
 {
@@ -205,7 +206,6 @@ PROCESS_THREAD(rest_manager_process, ev, data)
   PROCESS_PAUSE();
 
   /* Initialize the PERIODIC_RESOURCE timers, which will be handled by this process. */
-  periodic_resource_t* periodic_resource = NULL;
   for (periodic_resource = (periodic_resource_t*) list_head(restful_periodic_services); periodic_resource; periodic_resource = periodic_resource->next) {
     if (periodic_resource->period) {
       PRINTF("Periodic: Set timer for %s to %lu\n", periodic_resource->resource->url, periodic_resource->period);

@@ -97,6 +97,7 @@ coap_new_transaction(uint16_t mid, uip_ipaddr_t *addr, uint16_t port)
 void
 coap_send_transaction(coap_transaction_t *t)
 {
+      struct process *process_actual = PROCESS_CURRENT();
   PRINTF("Sending transaction %u\n", t->mid);
 
   coap_send_message(&t->addr, t->port, t->packet, t->packet_len);
@@ -123,7 +124,6 @@ coap_send_transaction(coap_transaction_t *t)
        * Hack: Setting timer for responsible process.
        * Maybe there is a better way, but avoid posting everything to the process.
        */
-      struct process *process_actual = PROCESS_CURRENT();
       process_current = transaction_handler_process;
       etimer_restart(&t->retrans_timer); /* interval updated above */
       process_current = process_actual;
@@ -132,10 +132,10 @@ coap_send_transaction(coap_transaction_t *t)
     }
     else
     {
-      /* Timed out. */
-      PRINTF("Timeout\n");
       restful_response_handler callback = t->callback;
       void *callback_data = t->callback_data;
+      /* Timed out. */
+      PRINTF("Timeout\n");
 
       /* handle observers */
       coap_remove_observer_by_client(&t->addr, t->port);

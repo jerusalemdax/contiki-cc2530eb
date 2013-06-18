@@ -78,14 +78,14 @@ static
 int
 coap_receive(void)
 {
-  coap_error_code = NO_ERROR;
-
-  PRINTF("handle_incoming_data(): received uip_datalen=%u \n",(uint16_t)uip_datalen());
-
   /* Static declaration reduces stack peaks and program code size. */
   static coap_packet_t message[1]; /* This way the packet can be treated as pointer as usual. */
   static coap_packet_t response[1];
   static coap_transaction_t *transaction = NULL;
+  coap_error_code = NO_ERROR;
+
+  PRINTF("handle_incoming_data(): received uip_datalen=%u \n",(uint16_t)uip_datalen());
+
 
   if (uip_newdata()) {
 
@@ -341,7 +341,7 @@ well_known_core_handler(void* request, void* response, uint8_t *buffer, uint16_t
       tmplen = strlen(resource->url);
       if (strpos+tmplen > *offset)
       {
-        bufpos += snprintf((char *) buffer + bufpos, preferred_size - bufpos + 1,
+        bufpos += sprintf((char *) buffer + bufpos,
                          "%s", resource->url + ((*offset-(int32_t)strpos > 0) ? (*offset-(int32_t)strpos) : 0));
                                                           /* minimal-net requires these casts */
         if (bufpos >= preferred_size)
@@ -368,7 +368,7 @@ well_known_core_handler(void* request, void* response, uint8_t *buffer, uint16_t
         tmplen = strlen(resource->attributes);
         if (strpos+tmplen > *offset)
         {
-          bufpos += snprintf((char *) buffer + bufpos, preferred_size - bufpos + 1,
+          bufpos += sprintf((char *) buffer + bufpos,
                          "%s", resource->attributes + (*offset-(int32_t)strpos > 0 ? *offset-(int32_t)strpos : 0));
           if (bufpos >= preferred_size)
           {
@@ -457,11 +457,10 @@ PT_THREAD(coap_blocking_request(struct request_state_t *state, process_event_t e
                                 uip_ipaddr_t *remote_ipaddr, uint16_t remote_port,
                                 coap_packet_t *request,
                                 blocking_response_handler request_callback)) {
-  PT_BEGIN(&state->pt);
-
   static uint8_t more;
   static uint32_t res_block;
   static uint8_t block_error;
+  PT_BEGIN(&state->pt);
 
   state->block_num = 0;
   state->response = NULL;
@@ -553,7 +552,7 @@ const struct rest_implementation coap_rest_implementation = {
   coap_get_post_variable,
 
   coap_notify_observers,
-  (restful_post_handler) coap_observe_handler,
+  coap_observe_handler,
 
   NULL, /* default pre-handler (set separate handler after activation if needed) */
   NULL, /* default post-handler for non-observable resources */
