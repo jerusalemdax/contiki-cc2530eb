@@ -4,7 +4,7 @@ PROJECT_SOURCEFILES += stub-rdc.c
 
 CONTIKI_PROJECT = sniffer
 
-all: $(CONTIKI_PROJECT) 
+all: $(CONTIKI_PROJECT)
 
 CONTIKI = ../../..
 

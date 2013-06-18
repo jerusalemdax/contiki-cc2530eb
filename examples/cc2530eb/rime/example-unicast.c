@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -27,27 +30,59 @@
  *
  */
 
+/**
+ * \file
+ *         Best-effort single-hop unicast example
+ * \author
+ *         Adam Dunkels <adam@sics.se>
+ */
+
 #include "contiki.h"
-#include "cc253x.h"
+#include "net/rime.h"
 
-#define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#include "dev/button-sensor.h"
+
+#include "dev/leds.h"
+
+#include <stdio.h>
 
 /*---------------------------------------------------------------------------*/
-PROCESS(sniffer_process, "Sniffer process");
-AUTOSTART_PROCESSES(&sniffer_process);
+PROCESS(example_unicast_process, "Example unicast");
+AUTOSTART_PROCESSES(&example_unicast_process);
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(sniffer_process, ev, data)
+static void
+recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
 {
+  printf("unicast message received from %d.%d\n\r",
+	 from->u8[0], from->u8[1]);
+}
+static const struct unicast_callbacks unicast_callbacks = {recv_uc};
+static struct unicast_conn uc;
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(example_unicast_process, ev, data)
+{
+  PROCESS_EXITHANDLER(unicast_close(&uc);)
 
   PROCESS_BEGIN();
 
-  PRINTF("Sniffer started\n");
+  unicast_open(&uc, 146, &unicast_callbacks);
 
-  /* Turn off RF Address Recognition - We need to accept all frames */
-  FRMFILT0 &= ~0x01;
+  while(1) {
+    static struct etimer et;
+    rimeaddr_t addr;
 
-  PROCESS_EXIT();
+    etimer_set(&et, CLOCK_SECOND);
+
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+
+    packetbuf_copyfrom("Hello", 5);
+    addr.u8[0] = 1;
+    addr.u8[1] = 0;
+    if(!rimeaddr_cmp(&addr, &rimeaddr_node_addr)) {
+      unicast_send(&uc, &addr);
+    }
+
+  }
 
   PROCESS_END();
 }

@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -27,28 +30,51 @@
  *
  */
 
+/**
+ * \file
+ *         Example for using the trickle code in Rime
+ * \author
+ *         Adam Dunkels <adam@sics.se>
+ */
+
 #include "contiki.h"
-#include "cc253x.h"
+#include "net/rime/trickle.h"
 
-#define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#include "dev/button-sensor.h"
 
+#include "dev/leds.h"
+
+#include <stdio.h>
 /*---------------------------------------------------------------------------*/
-PROCESS(sniffer_process, "Sniffer process");
-AUTOSTART_PROCESSES(&sniffer_process);
+PROCESS(example_trickle_process, "Trickle example");
+AUTOSTART_PROCESSES(&example_trickle_process);
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(sniffer_process, ev, data)
+static void
+trickle_recv(struct trickle_conn *c)
 {
-
+  printf("%d.%d: trickle message received '%s'\n\r",
+	 rimeaddr_node_addr.u8[0], rimeaddr_node_addr.u8[1],
+	 (char *)packetbuf_dataptr());
+}
+const static struct trickle_callbacks trickle_call = {trickle_recv};
+static struct trickle_conn trickle;
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(example_trickle_process, ev, data)
+{
+  PROCESS_EXITHANDLER(trickle_close(&trickle);)
   PROCESS_BEGIN();
 
-  PRINTF("Sniffer started\n");
+  trickle_open(&trickle, CLOCK_SECOND, 145, &trickle_call);
+  SENSORS_ACTIVATE(button_sensor);
 
-  /* Turn off RF Address Recognition - We need to accept all frames */
-  FRMFILT0 &= ~0x01;
+  while(1) {
+    PROCESS_WAIT_EVENT_UNTIL(ev == sensors_event &&
+			     data == &button_sensor);
 
-  PROCESS_EXIT();
+    packetbuf_copyfrom("Hello, world", 13);
+    trickle_send(&trickle);
 
+  }
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
