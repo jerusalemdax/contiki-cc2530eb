@@ -912,7 +912,7 @@ uip_process(uint8_t flag)
   }
 #endif /* UIP_UDP */
   uip_sappdata = uip_appdata = &uip_buf[UIP_IPTCPH_LEN + UIP_LLH_LEN];
-   
+
   /* Check if we were invoked because of a poll request for a
      particular connection. */
   if(flag == UIP_POLL_REQUEST) {
@@ -937,7 +937,7 @@ uip_process(uint8_t flag)
 #if UIP_TCP
     uip_len = 0;
     uip_slen = 0;
-    
+
     /* Increase the initial sequence number. */
     if(++iss[3] == 0) {
       if(++iss[2] == 0) {
@@ -946,7 +946,7 @@ uip_process(uint8_t flag)
         }
       }
     }
-    
+
     /*
      * Check if the connection is in a state in which we simply wait
      * for the connection to time out. If so, we increase the
@@ -972,7 +972,7 @@ uip_process(uint8_t flag)
                uip_connr->tcpstateflags == UIP_SYN_RCVD) &&
               uip_connr->nrtx == UIP_MAXSYNRTX)) {
             uip_connr->tcpstateflags = UIP_CLOSED;
-                  
+
             /*
              * We call UIP_APPCALL() with uip_flags set to
              * UIP_TIMEDOUT to inform the application that the
@@ -980,18 +980,18 @@ uip_process(uint8_t flag)
              */
             uip_flags = UIP_TIMEDOUT;
             UIP_APPCALL();
-                  
+
             /* We also send a reset packet to the remote host. */
             UIP_TCP_BUF->flags = TCP_RST | TCP_ACK;
             goto tcp_send_nodata;
           }
-               
+
           /* Exponential backoff. */
           uip_connr->timer = UIP_RTO << (uip_connr->nrtx > 4?
                                          4:
                                          uip_connr->nrtx);
           ++(uip_connr->nrtx);
-               
+
           /*
            * Ok, so we need to retransmit. We do this differently
            * depending on which state we are in. In ESTABLISHED, we
@@ -1005,7 +1005,7 @@ uip_process(uint8_t flag)
             case UIP_SYN_RCVD:
               /* In the SYN_RCVD state, we should retransmit our SYNACK. */
               goto tcp_send_synack;
-                     
+
 #if UIP_ACTIVE_OPEN
             case UIP_SYN_SENT:
               /* In the SYN_SENT state, we retransmit out SYN. */

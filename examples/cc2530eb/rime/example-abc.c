@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -27,27 +30,55 @@
  *
  */
 
+/**
+ * \file
+ *         Testing the abc layer in Rime
+ * \author
+ *         Adam Dunkels <adam@sics.se>
+ */
+
 #include "contiki.h"
-#include "cc253x.h"
+#include "net/rime.h"
+#include "random.h"
 
-#define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#include "dev/button-sensor.h"
 
+#include "dev/leds.h"
+
+#include <stdio.h>
 /*---------------------------------------------------------------------------*/
-PROCESS(sniffer_process, "Sniffer process");
-AUTOSTART_PROCESSES(&sniffer_process);
+PROCESS(example_abc_process, "ABC example");
+AUTOSTART_PROCESSES(&example_abc_process);
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(sniffer_process, ev, data)
+static void
+abc_recv(struct abc_conn *c)
 {
+  printf("abc message received '%s'\n\r", (char *)packetbuf_dataptr());
+}
+static const struct abc_callbacks abc_call = {abc_recv};
+static struct abc_conn abc;
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(example_abc_process, ev, data)
+{
+  static struct etimer et;
+
+  PROCESS_EXITHANDLER(abc_close(&abc);)
 
   PROCESS_BEGIN();
 
-  PRINTF("Sniffer started\n");
+  abc_open(&abc, 128, &abc_call);
 
-  /* Turn off RF Address Recognition - We need to accept all frames */
-  FRMFILT0 &= ~0x01;
+  while(1) {
 
-  PROCESS_EXIT();
+    /* Delay 2-4 seconds */
+    etimer_set(&et, CLOCK_SECOND * 2 + random_rand() % (CLOCK_SECOND * 2));
+
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+
+    packetbuf_copyfrom("Hello", 6);
+    abc_send(&abc);
+    printf("abc message sent\n\r");
+  }
 
   PROCESS_END();
 }
