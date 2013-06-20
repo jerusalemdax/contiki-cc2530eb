@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, George Oikonomou - <oikonomou@users.sourceforge.net>
+ * Copyright (c) 2010, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,42 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
+ *
  */
 
-/**
- * \file
- *         Platform-specific led driver for the TI SmartRF05 Eval. Board.
- *
- * \author
- *         George Oikonomou - <oikonomou@users.sourceforge.net>
- */
-#include "contiki-conf.h"
-#include "dev/leds.h"
-#include "dev/leds-arch.h"
-#include "cc253x.h"
-/*---------------------------------------------------------------------------*/
-void
-leds_arch_init(void)
-{
-    P1SEL &= ~(LED1_MASK | LED2_MASK | LED3_MASK);
-    P1DIR |= (LED1_MASK | LED2_MASK | LED3_MASK);
-    P0SEL &= ~LED4_MASK;
-    P0DIR |= LED4_MASK;
-    P0INP |= 2; /* Tri-state */
-}
-/*---------------------------------------------------------------------------*/
-unsigned char
-leds_arch_get(void)
-{
-    /* temp adc conflict with P0_1 */
-    return (unsigned char)(LED1_PIN | (LED2_PIN << 1) | (LED3_PIN << 2) | (LED4_PIN << 3));
-}
-/*---------------------------------------------------------------------------*/
-void
-leds_arch_set(unsigned char leds)
-{
-    LED1_PIN = leds & 0x01;
-    LED2_PIN = (leds & 0x02) >> 1;
-    LED3_PIN = (leds & 0x04) >> 2;
-    LED4_PIN = (leds & 0x08) >> 3;
-}
-/*---------------------------------------------------------------------------*/
+#ifndef __PROJECT_RPL_WEB_CONF_H__
+#define __PROJECT_RPL_WEB_CONF_H__
+
+/* #define SICSLOWPAN_CONF_FRAG	1 */
+
+/* Disabling RDC for demo purposes. Core updates often require more memory. */
+/* For projects, optimize memory and enable RDC again. */
+/* #undef NETSTACK_CONF_RDC */
+/* #define NETSTACK_CONF_RDC     nullrdc_driver */
+
+/* Save some memory for the sky platform. */
+/* #undef UIP_CONF_DS6_NBR_NBU */
+/* #define UIP_CONF_DS6_NBR_NBU     10 */
+/* #undef UIP_CONF_DS6_ROUTE_NBU */
+/* #define UIP_CONF_DS6_ROUTE_NBU   10 */
+
+/* Increase rpl-border-router IP-buffer when using 128. */
+#ifndef REST_MAX_CHUNK_SIZE
+#define REST_MAX_CHUNK_SIZE    64
+#endif
+
+/* Multiplies with chunk size, be aware of memory constraints. */
+#ifndef COAP_MAX_OPEN_TRANSACTIONS
+#define COAP_MAX_OPEN_TRANSACTIONS   2
+#endif
+
+/* Must be <= open transaction number. */
+#ifndef COAP_MAX_OBSERVERS
+#define COAP_MAX_OBSERVERS      COAP_MAX_OPEN_TRANSACTIONS-1
+#endif
+
+/* Reduce 802.15.4 frame queue to save RAM. */
+/* #undef QUEUEBUF_CONF_NUM */
+/* #define QUEUEBUF_CONF_NUM               4 */
+
+#endif /* __PROJECT_RPL_WEB_CONF_H__ */

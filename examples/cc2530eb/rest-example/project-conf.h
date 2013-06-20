@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, George Oikonomou - <oikonomou@users.sourceforge.net>
+ * Copyright (c) 2010, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
+ *
  */
 
-/**
- * \file
- *         Platform-specific led driver for the TI SmartRF05 Eval. Board.
- *
- * \author
- *         George Oikonomou - <oikonomou@users.sourceforge.net>
- */
-#include "contiki-conf.h"
-#include "dev/leds.h"
-#include "dev/leds-arch.h"
-#include "cc253x.h"
-/*---------------------------------------------------------------------------*/
-void
-leds_arch_init(void)
-{
-    P1SEL &= ~(LED1_MASK | LED2_MASK | LED3_MASK);
-    P1DIR |= (LED1_MASK | LED2_MASK | LED3_MASK);
-    P0SEL &= ~LED4_MASK;
-    P0DIR |= LED4_MASK;
-    P0INP |= 2; /* Tri-state */
-}
-/*---------------------------------------------------------------------------*/
-unsigned char
-leds_arch_get(void)
-{
-    /* temp adc conflict with P0_1 */
-    return (unsigned char)(LED1_PIN | (LED2_PIN << 1) | (LED3_PIN << 2) | (LED4_PIN << 3));
-}
-/*---------------------------------------------------------------------------*/
-void
-leds_arch_set(unsigned char leds)
-{
-    LED1_PIN = leds & 0x01;
-    LED2_PIN = (leds & 0x02) >> 1;
-    LED3_PIN = (leds & 0x04) >> 2;
-    LED4_PIN = (leds & 0x08) >> 3;
-}
-/*---------------------------------------------------------------------------*/
+#ifndef __PROJECT_RPL_WEB_CONF_H__
+#define __PROJECT_RPL_WEB_CONF_H__
+
+/* #ifndef QUEUEBUF_CONF_NUM */
+/* #define QUEUEBUF_CONF_NUM          6 */
+/* #endif */
+
+/* #ifndef UIP_CONF_BUFFER_SIZE */
+/* #define UIP_CONF_BUFFER_SIZE    140 */
+/* #endif */
+
+#ifndef UIP_CONF_RECEIVE_WINDOW
+#define UIP_CONF_RECEIVE_WINDOW  60
+#endif
+
+#ifndef WEBSERVER_CONF_CFS_CONNS
+#define WEBSERVER_CONF_CFS_CONNS 2
+#endif
+
+#endif /* __PROJECT_RPL_WEB_CONF_H__ */

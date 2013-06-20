@@ -179,8 +179,8 @@ slip_poll_handler(uint8_t *outbuf, uint16_t blen)
       return 0;
     }
   }
-#ifdef SLIP_CONF_ANSWER_MAC_REQUEST
-  else if(rxbuf[begin] == '?') { 
+#if SLIP_CONF_ANSWER_MAC_REQUEST
+  else if(rxbuf[begin] == '?') {
     /* Used by tapslip6 to request mac for auto configure */
     int i, j;
     char* hexchar = "0123456789abcdef";
@@ -189,9 +189,9 @@ slip_poll_handler(uint8_t *outbuf, uint16_t blen)
       state = STATE_TWOPACKETS; /* Interrupts do nothing. */
       rxbuf[begin] = 0;
       rxbuf[begin + 1] = 0;
-      
+
       rxbuf_init();
-      
+
       rimeaddr_t addr = get_mac_addr();
       /* this is just a test so far... just to see if it works */
       slip_arch_writeb('!');
@@ -240,7 +240,7 @@ slip_poll_handler(uint8_t *outbuf, uint16_t blen)
     if(state == STATE_TWOPACKETS) {
       pkt_end = end;
       state = STATE_OK;		/* Assume no bytes where lost! */
-      
+
       /* One more packet is buffered, need to be polled again! */
       process_poll(&slip_process);
     }
@@ -324,7 +324,7 @@ slip_input_byte(unsigned char c)
       state = STATE_OK;
     }
     return 0;
-    
+
   case STATE_TWOPACKETS:       /* Two packets are already buffered! */
     return 0;
 

@@ -59,12 +59,12 @@ int serialize_packet(coap_packet_t* packet, uint8_t* buffer)
   int index = 0;
   header_option_t* option = NULL;
   uint16_t option_delta = 0;
+  uint16_t temp = uip_htons(packet->tid);
 
   buffer[0] = (packet->ver) << COAP_HEADER_VERSION_POSITION;
   buffer[0] |= (packet->type) << COAP_HEADER_TYPE_POSITION;
   buffer[0] |= packet->option_count;
   buffer[1] = packet->code;
-  uint16_t temp = uip_htons(packet->tid);
   memcpy(
     (void*)&buffer[2],
     (void*)(&temp),
@@ -77,6 +77,7 @@ int serialize_packet(coap_packet_t* packet, uint8_t* buffer)
   /*Options should be sorted beforehand*/
   for (option = packet->options ; option ; option = option->next){
     uint16_t delta = option->option - option_delta;
+    int i = 0;
     if ( !delta ){
       PRINTF("WARNING: Delta==Zero\n");
     }
@@ -84,7 +85,6 @@ int serialize_packet(coap_packet_t* packet, uint8_t* buffer)
 
     PRINTF("option %u len %u option diff %u option_value addr %x option addr %x next option addr %x", option->option, option->len, option->option - option_delta, (unsigned int) option->value, (unsigned int)option, (unsigned int)option->next);
 
-    int i = 0;
     for ( ; i < option->len ; i++ ){
       PRINTF(" (%u)", option->value[i]);
     }
