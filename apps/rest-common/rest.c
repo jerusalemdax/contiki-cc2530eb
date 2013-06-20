@@ -219,16 +219,16 @@ rest_invoke_restful_service(REQUEST* request, RESPONSE* response)
   int found = 0;
   const char* url = request->url;
   uint16_t url_len = request->url_len;
+  resource_t* resource = NULL;
 
   PRINTF("rest_invoke_restful_service url %s url_len %d -->\n", url, url_len);
 
-  resource_t* resource = NULL;
 
   for (resource = (resource_t*)list_head(restful_services); resource; resource = resource->next) {
     /*if the web service handles that kind of requests and urls matches*/
     if (url && strlen(resource->url) == url_len && strncmp(resource->url, url, url_len) == 0){
-      found = 1;
       method_t method = rest_get_method_type(request);
+      found = 1;
 
       PRINTF("method %u, resource->methods_to_handle %u\n", (uint16_t)method, resource->methods_to_handle);
 
@@ -238,9 +238,9 @@ rest_invoke_restful_service(REQUEST* request, RESPONSE* response)
         #ifdef WITH_COAP
         uint32_t lifetime = 0;
         if (coap_get_header_subscription_lifetime(request, &lifetime)) {
+          periodic_resource_t* periodic_resource = NULL;
           PRINTF("Lifetime %lu\n", lifetime);
 
-          periodic_resource_t* periodic_resource = NULL;
           for (periodic_resource = (periodic_resource_t*)list_head(restful_periodic_services);
                periodic_resource;
                periodic_resource = periodic_resource->next) {

@@ -263,4 +263,6 @@
 #define QUEUEBUF_CONF_NUM                    8
 #endif /* UIP_CONF_IPV6 */
 
+#define PLATFORM_HAS_LEDS
+
 #endif /* __CONTIKI_CONF_H__ */

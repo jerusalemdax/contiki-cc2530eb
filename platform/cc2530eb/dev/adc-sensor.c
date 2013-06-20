@@ -65,6 +65,10 @@ value(int type)
 #if TEMP_SENSOR_ON
   case ADC_SENSOR_TYPE_TEMP:
     command |= ADCCON3_ECH3 | ADCCON3_ECH2 | ADCCON3_ECH1;
+
+    /* Connect the temperature sensor to the SoC */
+    ATEST = 1;
+
     break;
 #endif
 #if VDD_SENSOR_ON
@@ -86,6 +90,11 @@ value(int type)
    */
   while(!ADCIF);
 
+#if TEMP_SENSOR_ON
+  if(type == ADC_SENSOR_TYPE_TEMP) {
+    ATEST = 0;
+  }
+#endif
   /* Clear the Interrupt Flag */
   ADCIF = 0;
 
@@ -110,7 +119,7 @@ configure(int type, int value)
   case SENSORS_HW_INIT:
 #if TEMP_SENSOR_ON
     /* Connect temperature sensor to the SoC */
-    ATEST = 1;
+    /* ATEST = 1; */
     TESTREG0 = 1;
 #endif
     APCFG = 0; /* Disables Input Channels */
