@@ -3,6 +3,8 @@ all: er-app
 
 CONTIKI=../../..
 
+TARGET=cc2530eb
+
 # variable for root Makefile.include
 HAVE_BANKING=1
 WITH_UIP6=1

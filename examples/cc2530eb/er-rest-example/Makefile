@@ -1,6 +1,8 @@
 all: er-example-server er-example-client
 # Use this target explicitly if requried: er-plugtest-server
 
+TARGET=cc2530eb
+
 CONTIKI=../../..
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 

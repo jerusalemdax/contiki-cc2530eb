@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = joystick-demo
+CONTIKI_PROJECT = pollhandler
 
 TARGET=cc2530eb
 

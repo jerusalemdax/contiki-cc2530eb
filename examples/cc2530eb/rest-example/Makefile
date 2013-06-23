@@ -1,5 +1,7 @@
 all: rest-server-example coap-client-example
 
+TARGET=cc2530eb
+
 CONTIKI=../../..
 
 HAVE_BANKING=1
