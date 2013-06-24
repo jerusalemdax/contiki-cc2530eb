@@ -66,6 +66,7 @@ value(int type)
   case ADC_SENSOR_TYPE_TEMP:
     command |= ADCCON3_ECH3 | ADCCON3_ECH2 | ADCCON3_ECH1;
 
+    P0IEN &= ~0x02;
     /* Connect the temperature sensor to the SoC */
     ATEST = 1;
 
@@ -93,6 +94,8 @@ value(int type)
 #if TEMP_SENSOR_ON
   if(type == ADC_SENSOR_TYPE_TEMP) {
     ATEST = 0;
+    P0IFG &= ~0x02;
+    P0IEN |= 0x02;
   }
 #endif
   /* Clear the Interrupt Flag */
