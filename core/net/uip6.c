@@ -435,7 +435,7 @@ struct uip_conn *
 uip_connect(uip_ipaddr_t *ripaddr, uint16_t rport)
 {
   register struct uip_conn *conn, *cconn;
-  
+
   /* Find an unused local port. */
  again:
   ++lastport;
@@ -472,7 +472,7 @@ uip_connect(uip_ipaddr_t *ripaddr, uint16_t rport)
   if(conn == 0) {
     return 0;
   }
-  
+
   conn->tcpstateflags = UIP_SYN_SENT;
 
   conn->snd_nxt[0] = iss[0];
@@ -486,7 +486,7 @@ uip_connect(uip_ipaddr_t *ripaddr, uint16_t rport)
   conn->rcv_nxt[3] = 0;
 
   conn->initialmss = conn->mss = UIP_TCP_MSS;
-  
+
   conn->len = 1;   /* TCP length of the SYN is one. */
   conn->nrtx = 0;
   conn->timer = 1; /* Send the SYN next time around. */
@@ -496,7 +496,7 @@ uip_connect(uip_ipaddr_t *ripaddr, uint16_t rport)
   conn->lport = uip_htons(lastport);
   conn->rport = rport;
   uip_ipaddr_copy(&conn->ripaddr, ripaddr);
-  
+
   return conn;
 }
 #endif /* UIP_TCP && UIP_ACTIVE_OPEN */

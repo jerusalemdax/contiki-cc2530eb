@@ -200,7 +200,7 @@
 #define UIP_CONF_NETIF_MAX_ADDRESSES         3
 
 /* TCP, UDP, ICMP */
-#define UIP_CONF_TCP                         0
+#define UIP_CONF_TCP                         1
 #define UIP_CONF_UDP                         1
 #define UIP_CONF_UDP_CHECKSUMS               1
 

@@ -1,4 +1,4 @@
-all: udp-server udp-client
+all: psock-client psock-server
 
 TARGET=cc2530eb
 

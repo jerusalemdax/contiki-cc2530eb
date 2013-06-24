@@ -42,7 +42,7 @@
 #define PRINTLLADDR(addr)
 #endif
 
-#define SERVER_NODE(ipaddr)   uip_ip6addr(ipaddr, 0xfe80, 0, 0, 0, 0x0212, 0x7401, 0x0001, 0x0101)
+#define SERVER_NODE(ipaddr)   uip_ip6addr(ipaddr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd187)
 #define LOCAL_PORT 61617
 #define REMOTE_PORT 61616
 
@@ -53,8 +53,8 @@ static struct uip_udp_conn *client_conn;
 static struct etimer et;
 #define MAX_PAYLOAD_LEN   100
 
-#define NUMBER_OF_URLS 3
-char* service_urls[NUMBER_OF_URLS] = {"light", ".well-known/core", "helloworld"};
+#define NUMBER_OF_URLS 2
+char* service_urls[NUMBER_OF_URLS] = {"toggle", "led?color=green"};
 
 static void
 response_handler(coap_packet_t* response)

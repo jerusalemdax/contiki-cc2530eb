@@ -1,6 +1,8 @@
 CONTIKI_PROJECT = hello-world
 
-all: $(CONTIKI_PROJECT) 
+TARGET = cc2530eb
+
+all: $(CONTIKI_PROJECT)
 
 CONTIKI = ../../../
 include $(CONTIKI)/Makefile.include

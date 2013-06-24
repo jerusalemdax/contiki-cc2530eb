@@ -74,7 +74,7 @@ print_local_addresses(void)
   int i;
   uint8_t state;
 
-  PRINTF("Server IPv6 addresses: ");
+  PRINTF("Server IPv6 addresses:\n\r");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
@@ -102,7 +102,8 @@ PROCESS_THREAD(udp_server_process, ev, data)
 
   print_local_addresses();
 
-  server_conn = udp_new(NULL, UIP_HTONS(3001), NULL);
+  /* to use netcat, must set the local port to 0 */
+  server_conn = udp_new(NULL, UIP_HTONS(0), NULL);
   udp_bind(server_conn, UIP_HTONS(3000));
 
   while(1) {

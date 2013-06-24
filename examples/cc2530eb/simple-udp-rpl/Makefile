@@ -1,4 +1,7 @@
 all: broadcast-example unicast-sender unicast-receiver
+
+TARGET=cc2530eb
+
 APPS=servreg-hack
 CONTIKI=../../..
 

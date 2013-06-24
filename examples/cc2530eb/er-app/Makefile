@@ -1,11 +1,9 @@
-all: er-example-server er-example-client
+all: er-app
 # Use this target explicitly if requried: er-plugtest-server
 
-TARGET=cc2530eb
-
 CONTIKI=../../..
-CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
+TARGET=cc2530eb
 
 # variable for root Makefile.include
 HAVE_BANKING=1
