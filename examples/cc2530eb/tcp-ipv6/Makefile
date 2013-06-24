@@ -1,4 +1,4 @@
-all: psock-client psock-server
+all: tcp-server tcp-client
 
 DEFINES+=PROJECT_CONF_H=\"project-conf.h\"
 

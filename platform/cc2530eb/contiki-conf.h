@@ -144,6 +144,8 @@
 #define LPM_CONF_MODE         0 /* 0: no LPM, 1: MCU IDLE, 2: Drop to PM1 */
 #endif
 
+#define WITH_UIP
+
 /* DMA Configuration */
 #ifndef DMA_CONF_ON
 #define DMA_CONF_ON 0

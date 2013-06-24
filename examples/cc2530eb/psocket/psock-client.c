@@ -71,7 +71,7 @@ PROCESS_THREAD(example_psock_client_process, ev, data)
 #endif
   print_local_addresses();
 
-  uip_ip6addr(&addr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd187);
+  uip_ip6addr(&addr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd0e4);
 
   tcp_connect(&addr, UIP_HTONS(1010), NULL);
 

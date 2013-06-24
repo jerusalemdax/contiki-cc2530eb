@@ -2,3 +2,4 @@
 * the rest CoAP server couldn't get message correctly although it has no autorestart problem now
 * joystick example still have bugs, always show two buttons result when I press it, maybe this is the difference between the official joystick
 * temperory could not run neither coap3 or coap7, I think it's the hardware reason, But I will try it.
+* the tcp-ipv6 example couldn't not work between nodes and nodes, but works fine with nodes and pc with netcat. So the psocket example.

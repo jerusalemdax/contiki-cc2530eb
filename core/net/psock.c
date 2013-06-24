@@ -107,7 +107,7 @@ static uint8_t
 buf_bufto(CC_REGISTER_ARG struct psock_buf *buf, uint8_t endmarker,
 	  CC_REGISTER_ARG uint8_t **dataptr, CC_REGISTER_ARG uint16_t *datalen)
 {
-  uint8_t c;
+  static uint8_t c;
   while(buf->left > 0 && *datalen > 0) {
     c = *buf->ptr = **dataptr;
     ++*dataptr;
