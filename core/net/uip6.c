@@ -274,15 +274,15 @@ uip_add32(uint8_t *op32, uint16_t op16)
   uip_acc32[2] = op32[2] + (op16 >> 8);
   uip_acc32[1] = op32[1];
   uip_acc32[0] = op32[0];
-  
+
   if(uip_acc32[2] < (op16 >> 8)) {
     ++uip_acc32[1];
     if(uip_acc32[1] == 0) {
       ++uip_acc32[0];
     }
   }
-  
-  
+
+
   if(uip_acc32[3] < (op16 & 0xff)) {
     ++uip_acc32[2];
     if(uip_acc32[2] == 0) {
@@ -301,9 +301,9 @@ uip_add32(uint8_t *op32, uint16_t op16)
 static uint16_t
 chksum(uint16_t sum, const uint8_t *data, uint16_t len)
 {
-  uint16_t t;
-  const uint8_t *dataptr;
-  const uint8_t *last_byte;
+  static uint16_t t;
+  static const uint8_t *dataptr;
+  static const uint8_t *last_byte;
 
   dataptr = data;
   last_byte = data + len - 1;
@@ -339,7 +339,7 @@ uip_chksum(uint16_t *data, uint16_t len)
 uint16_t
 uip_ipchksum(void)
 {
-  uint16_t sum;
+  static uint16_t sum;
 
   sum = chksum(0, &uip_buf[UIP_LLH_LEN], UIP_IPH_LEN);
   PRINTF("uip_ipchksum: sum 0x%04x\n", sum);
@@ -359,8 +359,8 @@ upper_layer_chksum(uint8_t proto)
  * upper_layer_len triggers this bug unless it is declared volatile.
  * See https://sourceforge.net/apps/mantisbt/contiki/view.php?id=3
  */
-  volatile uint16_t upper_layer_len;
-  uint16_t sum;
+  static volatile uint16_t upper_layer_len;
+  static uint16_t sum;
   
   upper_layer_len = (((uint16_t)(UIP_IP_BUF->len[0]) << 8) + UIP_IP_BUF->len[1] - uip_ext_len);
   
@@ -635,9 +635,9 @@ static uint32_t uip_id; /* For every packet that is to be fragmented, the source
 static uint16_t
 uip_reass(void)
 {
-  uint16_t offset=0;
-  uint16_t len;
-  uint16_t i;
+  static uint16_t offset=0;
+  static uint16_t len;
+  static uint16_t i;
   
   /* If ip_reasstmr is zero, no packet is present in the buffer */
   /* We first write the unfragmentable part of IP header into the reassembly
@@ -2290,7 +2290,7 @@ uip_htonl(uint32_t val)
 void
 uip_send(const void *data, int len)
 {
-  int copylen;
+  static int copylen;
 #define MIN(a,b) ((a) < (b)? (a): (b))
   copylen = MIN(len, UIP_BUFSIZE - UIP_LLH_LEN - UIP_TCPIP_HLEN -
                 (int)((char *)uip_sappdata - (char *)&uip_buf[UIP_LLH_LEN + UIP_TCPIP_HLEN]));
