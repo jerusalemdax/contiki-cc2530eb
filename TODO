@@ -1,3 +1,4 @@
-* how to use the sniffer example ? sniffer例程的作用和使用方法？
-* add CoAP support 。 增加CoAP例程。
-* simple-udp-rpl 的unicast-sender每隔大概几分钟就会重启一次，估计还是堆栈溢出问题。
+* how to use the sniffer example ? 
+* the rest CoAP server couldn't get message correctly although it has no autorestart problem now
+* joystick example still have bugs, always show two buttons result when I press it, maybe this is the difference between the official joystick
+* temperory could not run neither coap3 or coap7, I think it's the hardware reason, But I will try it.

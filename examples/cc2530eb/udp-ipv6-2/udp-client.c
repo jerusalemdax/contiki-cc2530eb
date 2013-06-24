@@ -79,7 +79,7 @@ print_local_addresses(void)
   int i;
   uint8_t state;
 
-  PRINTF("Client IPv6 addresses: ");
+  PRINTF("Client IPv6 addresses:\n\r");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
@@ -136,7 +136,8 @@ PROCESS_THREAD(udp_client_process, ev, data)
 
   /* new connection with remote host */
   client_conn = udp_new(&ipaddr, UIP_HTONS(3000), NULL);
-  udp_bind(client_conn, UIP_HTONS(3001));
+  /* to use netcat, not set the local port */
+  /* udp_bind(client_conn, UIP_HTONS(3001)); */
 
   PRINTF("Created a connection with the server ");
   PRINT6ADDR(&client_conn->ripaddr);
