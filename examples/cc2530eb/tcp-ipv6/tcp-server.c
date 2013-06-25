@@ -35,6 +35,21 @@
 
 #define DEBUG DEBUG_PRINT
 #include "net/uip-debug.h"
+#include "debug.h"
+
+#if DEBUG
+#define PUTSTRING(...) putstring(__VA_ARGS__)
+#define PUTHEX(...) puthex(__VA_ARGS__)
+#define PUTBIN(...) putbin(__VA_ARGS__)
+#define PUTDEC(...) putdec(__VA_ARGS__)
+#define PUTCHAR(...) putchar(__VA_ARGS__)
+#else
+#define PUTSTRING(...)
+#define PUTHEX(...)
+#define PUTBIN(...)
+#define PUTDEC(...)
+#define PUTCHAR(...)
+#endif
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
@@ -54,13 +69,16 @@ tcpip_handler(void)
 
   if(uip_newdata()) {
     ((char *)uip_appdata)[uip_datalen()] = 0;
-    PRINTF("Server received: '%s' from ", (char *)uip_appdata);
+    PUTSTRING("Server received: ");
+    PUTSTRING(((char *)uip_appdata));
+    PUTSTRING("from ");
     PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-    PRINTF("\n\r");
+    PUTSTRING("\n\r");
 
-    PRINTF("Responding with message: ");
+    PUTSTRING("Responding with message: ");
     sprintf(buf, "Hello from the server! (%d)", ++seq_id);
-    PRINTF("%s\n\r", buf);
+    PUTSTRING(buf);
+    PUTSTRING("\n\r");
 
     uip_send(buf, strlen(buf));
   }
@@ -72,13 +90,13 @@ print_local_addresses(void)
   static int i;
   static uint8_t state;
 
-  PRINTF("Server IPv6 addresses:\n\r");
+  PUTSTRING("Server IPv6 addresses:\n\r");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
        (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
       PRINT6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
-      PRINTF("\n\r");
+      PUTSTRING("\n\r");
     }
   }
 }
@@ -87,13 +105,13 @@ PROCESS_THREAD(tcp_server_process, ev, data)
 {
 
   PROCESS_BEGIN();
-  PRINTF("TCP server started\n\r");
+  PUTSTRING("TCP server started\n\r");
 
-#if UIP_CONF_ROUTER
-  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
-  uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
-  uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
-#endif /* UIP_CONF_ROUTER */
+/* #if UIP_CONF_ROUTER */
+/*   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0); */
+/*   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr); */
+/*   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF); */
+/* #endif /\* UIP_CONF_ROUTER *\/ */
 
   print_local_addresses();
 
