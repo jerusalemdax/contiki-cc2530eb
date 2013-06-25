@@ -34,29 +34,13 @@
 #include <string.h>
 
 #define DEBUG DEBUG_PRINT
-#include "debug.h"
 #include "net/uip-debug.h"
-
-#if DEBUG
-#define PUTSTRING(...) putstring(__VA_ARGS__)
-#define PUTHEX(...) puthex(__VA_ARGS__)
-#define PUTBIN(...) putbin(__VA_ARGS__)
-#define PUTDEC(...) putdec(__VA_ARGS__)
-#define PUTCHAR(...) putchar(__VA_ARGS__)
-#else
-#define PUTSTRING(...)
-#define PUTHEX(...)
-#define PUTBIN(...)
-#define PUTDEC(...)
-#define PUTCHAR(...)
-#endif
 
 #define SEND_INTERVAL		15 * CLOCK_SECOND
 #define MAX_PAYLOAD_LEN		40
 
 static struct etimer et;
 static uip_ipaddr_t addr;
-static uip_ipaddr_t ipaddr;
 static char *str;
 
 /*---------------------------------------------------------------------------*/
@@ -70,23 +54,19 @@ tcpip_handler(void)
   if(uip_newdata()) {
     str = uip_appdata;
     str[uip_datalen()] = '\0';
-    PUTSTRING("Response from the server:");
-    PUTSTRING(str);
-    PUTSTRING("\n\r");
+    printf("Response from the server: '%s'\n\r", str);
   }
 }
 /*---------------------------------------------------------------------------*/
-static char buf[MAX_PAYLOAD_LEN];
+static char buf[MAX_PAYLOAD_LEN] = "hello, world";
 static int seq_id;
 static void
 timeout_handler(void)
 {
 
-  PUTSTRING("Client sending to: ");
-  sprintf(buf, "Hello %d from the client", ++seq_id);
-  PUTSTRING(" (msg: ");
-  PUTSTRING(buf);
-  PUTSTRING(")\n\r");
+  printf("Client sending to: ");
+  /* sprintf(buf, "Hello %d from the client", ++seq_id); */
+  printf(" (msg: %s)\n\r", buf);
   uip_send(buf, strlen(buf));
 }
 /*---------------------------------------------------------------------------*/
@@ -97,15 +77,15 @@ static void
 print_local_addresses(void)
 {
 
-    PUTSTRING("Client IPv6 addresses:\n\r");
-    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
-        state = uip_ds6_if.addr_list[i].state;
-        if(uip_ds6_if.addr_list[i].isused &&
-            (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
-            PRINT6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
-            PUTSTRING("\n\r");
-        }
+  PRINTF("Client IPv6 addresses:\n\r");
+  for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+    state = uip_ds6_if.addr_list[i].state;
+    if(uip_ds6_if.addr_list[i].isused &&
+       (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
+      PRINT6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
+      PRINTF("\n\r");
     }
+  }
 }
 /*---------------------------------------------------------------------------*/
 #if UIP_CONF_ROUTER
@@ -113,6 +93,7 @@ static void
 set_global_address(void)
 {
 
+    uip_ipaddr_t ipaddr;
   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
@@ -123,15 +104,15 @@ PROCESS_THREAD(tcp_client_process, ev, data)
 {
 
   PROCESS_BEGIN();
-  PUTSTRING("TCP client process started\n\r");
+  PRINTF("TCP client process started\n\r");
 
-/* #if UIP_CONF_ROUTER */
-/*   set_global_address(); */
-/* #endif */
+#if UIP_CONF_ROUTER
+  set_global_address();
+#endif
 
   print_local_addresses();
 
-  uip_ip6addr(&addr, 0xfe80, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xdaf5);
+  uip_ip6addr(&addr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd0e4);
 
   tcp_connect(&addr, UIP_HTONS(1010), NULL);
 

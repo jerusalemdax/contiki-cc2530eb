@@ -407,7 +407,7 @@ uip_udpchksum(void)
 void
 uip_init(void)
 {
-   
+
   uip_ds6_init();
 
 #if UIP_TCP
@@ -1504,7 +1504,7 @@ uip_process(uint8_t flag)
 
  udp_found:
   PRINTF("In udp_found\n");
- 
+
   uip_conn = NULL;
   uip_flags = UIP_NEWDATA;
   uip_sappdata = uip_appdata = &uip_buf[UIP_IPUDPH_LEN + UIP_LLH_LEN];

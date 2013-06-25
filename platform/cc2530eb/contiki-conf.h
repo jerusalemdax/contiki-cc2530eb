@@ -204,8 +204,7 @@
 /* TCP, UDP, ICMP */
 #define UIP_CONF_TCP                         1
 #define UIP_CONF_UDP                         1
-#define UIP_CONF_TCP_SPLIT                   0
-#define UIP_CONF_LOGGING                     0
+#define UIP_CONF_ICMP                        1
 #define UIP_CONF_UDP_CHECKSUMS               1
 
 /* ND and Routing */
