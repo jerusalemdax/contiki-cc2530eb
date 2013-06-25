@@ -41,7 +41,6 @@
 
 static struct etimer et;
 static uip_ipaddr_t addr;
-static uip_ipaddr_t ipaddr;
 static char *str;
 
 /*---------------------------------------------------------------------------*/
@@ -59,20 +58,16 @@ tcpip_handler(void)
   }
 }
 /*---------------------------------------------------------------------------*/
-static char buf[MAX_PAYLOAD_LEN];
-static void
+static char buf[MAX_PAYLOAD_LEN] = "hello, world";
 static int seq_id;
+static void
 timeout_handler(void)
 {
 
   printf("Client sending to: ");
-  sprintf(buf, "Hello %d from the client", ++seq_id);
+  /* sprintf(buf, "Hello %d from the client", ++seq_id); */
   printf(" (msg: %s)\n\r", buf);
-#if SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION
-  uip_send(buf, UIP_APPDATA_SIZE);
-#else /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
   uip_send(buf, strlen(buf));
-#endif /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
 }
 /*---------------------------------------------------------------------------*/
 
@@ -98,6 +93,7 @@ static void
 set_global_address(void)
 {
 
+    uip_ipaddr_t ipaddr;
   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
