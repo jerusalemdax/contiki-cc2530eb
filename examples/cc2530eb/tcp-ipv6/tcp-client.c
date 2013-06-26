@@ -36,7 +36,7 @@
 #define DEBUG DEBUG_PRINT
 #include "net/uip-debug.h"
 
-#define SEND_INTERVAL		15 * CLOCK_SECOND
+#define SEND_INTERVAL		CLOCK_SECOND
 #define MAX_PAYLOAD_LEN		40
 
 static struct etimer et;
@@ -116,6 +116,14 @@ PROCESS_THREAD(tcp_client_process, ev, data)
 
   tcp_connect(&addr, UIP_HTONS(1010), NULL);
 
+  printf("Connecting...\n\r");
+  PROCESS_WAIT_EVENT_UNTIL(ev == tcpip_event);
+
+  if(uip_aborted() || uip_timedout() || uip_closed()) {
+    printf("Could not establish connection\n\r");
+  } else if(uip_connected()) {
+    printf("Connected\n\r");
+
   etimer_set(&et, SEND_INTERVAL);
   while(1) {
     PROCESS_YIELD();
@@ -125,6 +133,7 @@ PROCESS_THREAD(tcp_client_process, ev, data)
     } else if(ev == tcpip_event) {
       tcpip_handler();
     }
+  }
   }
 
   PROCESS_END();
