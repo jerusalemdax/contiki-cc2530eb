@@ -30,6 +30,7 @@
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
+#include "dev/leds.h"
 
 #include <string.h>
 
@@ -37,10 +38,14 @@
 #include "net/uip-debug.h"
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
+#define UIP_UDP_BUF  ((struct uip_udp_hdr *)&uip_buf[uip_l2_l3_hdr_len])
 
 #define MAX_PAYLOAD_LEN 120
 
 static struct uip_udp_conn *server_conn;
+#if UIP_CONF_ROUTER
+static uip_ipaddr_t ipaddr;
+#endif /* UIP_CONF_ROUTER */
 
 PROCESS(udp_server_process, "UDP server process");
 AUTOSTART_PROCESSES(&udp_server_process);
@@ -51,6 +56,7 @@ tcpip_handler(void)
   static int seq_id;
   static char buf[MAX_PAYLOAD_LEN];
 
+  leds_on(LEDS_RED);
   if(uip_newdata()) {
     ((char *)uip_appdata)[uip_datalen()] = 0;
     PRINTF("Server received: '%s' from ", (char *)uip_appdata);
@@ -58,6 +64,7 @@ tcpip_handler(void)
     PRINTF("\n\r");
 
     uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
+    server_conn->rport = UIP_UDP_BUF->srcport;
     PRINTF("Responding with message: ");
     sprintf(buf, "Hello from the server! (%d)", ++seq_id);
     PRINTF("%s\n\r", buf);
@@ -65,7 +72,9 @@ tcpip_handler(void)
     uip_udp_packet_send(server_conn, buf, strlen(buf));
     /* Restore server connection to allow data from any node */
     memset(&server_conn->ripaddr, 0, sizeof(server_conn->ripaddr));
+    server_conn->rport = 0;
   }
+  leds_off(LEDS_RED);
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -87,9 +96,6 @@ print_local_addresses(void)
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_server_process, ev, data)
 {
-#if UIP_CONF_ROUTER
-  uip_ipaddr_t ipaddr;
-#endif /* UIP_CONF_ROUTER */
 
   PROCESS_BEGIN();
   PRINTF("UDP server started\n\r");
