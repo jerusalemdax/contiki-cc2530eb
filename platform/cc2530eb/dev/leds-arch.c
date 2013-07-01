@@ -54,7 +54,6 @@ leds_arch_init(void)
 unsigned char
 leds_arch_get(void)
 {
-    /* temp adc conflict with P0_1 */
     return (unsigned char)(LED1_PIN | (LED2_PIN << 1) | (LED3_PIN << 2) | (LED4_PIN << 3));
 }
 /*---------------------------------------------------------------------------*/
