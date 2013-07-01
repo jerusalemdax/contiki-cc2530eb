@@ -4,7 +4,7 @@ ifndef CONTIKI
   $(error CONTIKI not defined! You must specify where CONTIKI resides!)
 endif
 
-CONTIKI_TARGET_DIRS = . dev
+CONTIKI_TARGET_DIRS = . dev drivers
 CONTIKI_TARGET_MAIN = $(addprefix $(OBJECTDIR)/,contiki-main.rel)
 
 CONTIKI_TARGET_SOURCEFILES = contiki-main.c
@@ -14,6 +14,7 @@ CONTIKI_TARGET_SOURCEFILES += button-sensor.c adc-sensor.c joystick-sensor.c
 CONTIKI_TARGET_SOURCEFILES += serial-line.c slip-arch.c slip.c
 CONTIKI_TARGET_SOURCEFILES += putchar.c debug.c
 CONTIKI_TARGET_SOURCEFILES += usb-serial.c
+CONTIKI_TARGET_SOURCEFILES += adxl345.c iic.c
 
 CONTIKI_SOURCEFILES += $(CONTIKI_TARGET_SOURCEFILES)
 
