@@ -6,8 +6,9 @@
 #define SCL     P1_2
 #define SDA     P1_3
 
-#define SDADirOut P1DIR|=0x08;
-#define SDADirIn  P1DIR&=~0x08;
+#define SCLDirOut() P1DIR|=0x04
+#define SDADirOut() P1DIR|=0x08
+#define SDADirIn()  P1DIR&=~0x08
 
 extern void I2C_Start(void);
 

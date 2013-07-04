@@ -71,7 +71,7 @@ tcpip_handler(void)
     ((char *)uip_appdata)[uip_datalen()] = 0;
     PUTSTRING("Server received: ");
     PUTSTRING(((char *)uip_appdata));
-    PUTSTRING("from ");
+    PUTSTRING(" from ");
     PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
     PUTSTRING("\n\r");
 
@@ -107,11 +107,11 @@ PROCESS_THREAD(tcp_server_process, ev, data)
   PROCESS_BEGIN();
   PUTSTRING("TCP server started\n\r");
 
-/* #if UIP_CONF_ROUTER */
-/*   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0); */
-/*   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr); */
-/*   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF); */
-/* #endif /\* UIP_CONF_ROUTER *\/ */
+#if UIP_CONF_ROUTER
+  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+  uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
+  uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+#endif /* UIP_CONF_ROUTER */
 
   print_local_addresses();
 

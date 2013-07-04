@@ -9,9 +9,7 @@ typedef struct adxl345_data{
     int z;
 }ADXL345_DATA;
 
-extern uint8_t POS_TEMP[6];
-
-extern void Init_ADXL345();
+extern void Init_ADXL345(void);
 
 extern void Multiple_Read_ADXL345(ADXL345_DATA *dat);
 

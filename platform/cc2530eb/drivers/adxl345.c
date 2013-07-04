@@ -10,17 +10,12 @@
 #include "adxl345.h"
 #include "iic.h"
 
-
-#define TRUE 1
-#define FALSE 0
 #define	ADXL345_SLAVE_ADDR 0xA6
 
-uint8_t POS_TEMP[6];
-
-
-void Init_ADXL345()
+void Init_ADXL345(void)
 {
-    P1DIR = 0x0C;
+    SCLDirOut();
+    SDADirOut();
     I2C_Write(ADXL345_SLAVE_ADDR, 0x31,0x0B);
     I2C_Write(ADXL345_SLAVE_ADDR, 0x2C,0x0F);
     I2C_Write(ADXL345_SLAVE_ADDR, 0x2D,0x08);
@@ -50,6 +45,5 @@ void Multiple_Read_ADXL345(ADXL345_DATA *dat)
             Sendack(0);
         }
     }
-    printf ("\n\r");
     I2C_Stop();
 }

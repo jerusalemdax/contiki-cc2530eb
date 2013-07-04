@@ -14,7 +14,7 @@ CONTIKI_TARGET_SOURCEFILES += button-sensor.c adc-sensor.c joystick-sensor.c
 CONTIKI_TARGET_SOURCEFILES += serial-line.c slip-arch.c slip.c
 CONTIKI_TARGET_SOURCEFILES += putchar.c debug.c
 CONTIKI_TARGET_SOURCEFILES += usb-serial.c
-CONTIKI_TARGET_SOURCEFILES += adxl345.c iic.c
+CONTIKI_TARGET_SOURCEFILES += adxl345.c iic.c l3g4200d.c hmc5883.c bmp085.c
 
 CONTIKI_SOURCEFILES += $(CONTIKI_TARGET_SOURCEFILES)
 
