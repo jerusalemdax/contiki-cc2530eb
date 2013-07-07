@@ -19,9 +19,9 @@
 #define OUT_Z_H 0x2D
 
 typedef struct l3g4200d_data{
-    int x;
-    int y;
-    int z;
+    int16_t x;
+    int16_t y;
+    int16_t z;
 }L3G4200D_DATA;
 
 void Init_L3G4200D(void);

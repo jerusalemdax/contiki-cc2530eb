@@ -12,9 +12,15 @@
 #define DEBUG DEBUG_PRINT
 #include "net/uip-debug.h"
 
-#define MAX_PAYLOAD_LEN		18
+#define DEVICE_RH	0x00
+#define DEVICE_LH	0x01
+#define DEVICE_RL	0x02
+#define DEVICE_LL	0x03
+
+#define DEV_ID DEVICE_RH
 
 struct nine_axis_data{
+    uint8_t dev_id;
     ADXL345_DATA ad_dat;
     L3G4200D_DATA l3_dat;
     HMC5883_DATA hm_dat;
@@ -25,6 +31,8 @@ struct nine_axis_data{
 static struct etimer et;
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t ipaddr;
+static uint8_t testid;
+static char testch[20];
 /*---------------------------------------------------------------------------*/
 static void
 timeout_handler(void)
@@ -32,7 +40,7 @@ timeout_handler(void)
 #if SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION
   uip_udp_packet_send(client_conn, &send_data, UIP_APPDATA_SIZE);
 #else /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
-  uip_udp_packet_send(client_conn, &send_data, 15);
+  uip_udp_packet_send(client_conn, &send_data, sizeof(send_data));
 #endif /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
 }
 /*---------------------------------------------------------------------------*/
@@ -65,6 +73,7 @@ PROCESS_THREAD(nine_axis_process, ev, data)
   Init_L3G4200D();
   Init_HMC5883();
   Init_BMP085();
+  send_data.dev_id = DEV_ID;
 
 #if UIP_CONF_ROUTER
   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
@@ -79,7 +88,7 @@ PROCESS_THREAD(nine_axis_process, ev, data)
 
   client_conn = udp_new(&ipaddr, UIP_HTONS(3000), NULL);
 
-  etimer_set(&et, CLOCK_SECOND);
+  etimer_set(&et, CLOCK_SECOND / 5);
   while(1) {
     PROCESS_WAIT_EVENT();
 
@@ -89,10 +98,6 @@ PROCESS_THREAD(nine_axis_process, ev, data)
         Multiple_Read_HMC5883(&send_data.hm_dat);
         Multiple_Read_BMP085(&send_data.bmp_dat);
 
-        printf ("adxl345: x = %d, y = %d, z = %d\n\r",send_data.ad_dat.x,send_data.ad_dat.y,send_data.ad_dat.z);
-        printf ("l3g4200d: x = %d, y= %d, z= %d\n\r",send_data.l3_dat.x,send_data.l3_dat.y,send_data.l3_dat.z);
-        printf ("hmc5883: x = %d, y= %d, z= %d\n\r",send_data.hm_dat.x,send_data.hm_dat.y,send_data.hm_dat.z);
-        printf ("bmp085: temp = %d, press= %ld\n\r",send_data.bmp_dat.temp,send_data.bmp_dat.press);
         timeout_handler();
         etimer_reset(&et);
     }

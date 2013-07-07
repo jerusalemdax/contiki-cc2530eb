@@ -4,9 +4,9 @@
 #include "cc253x.h"
 
 typedef struct adxl345_data{
-    int x;
-    int y;
-    int z;
+    int16_t x;
+    int16_t y;
+    int16_t z;
 }ADXL345_DATA;
 
 extern void Init_ADXL345(void);
