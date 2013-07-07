@@ -19,6 +19,8 @@
 
 #define DEV_ID DEVICE_RH
 
+#define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
+#define UIP_UDP_BUF  ((struct uip_udp_hdr *)&uip_buf[uip_l2_l3_hdr_len])
 struct nine_axis_data{
     uint8_t dev_id;
     ADXL345_DATA ad_dat;
@@ -29,19 +31,38 @@ struct nine_axis_data{
 
 /*---------------------------------------------------------------------------*/
 static struct etimer et;
-static struct uip_udp_conn *client_conn;
+static struct uip_udp_conn *server_conn;
 static uip_ipaddr_t ipaddr;
 static uint8_t testid;
 static char testch[20];
 /*---------------------------------------------------------------------------*/
 static void
-timeout_handler(void)
+tcpip_handler(void)
 {
+    leds_on(LEDS_RED);
+    if(uip_newdata())
+    {
+        if (((char *)uip_appdata)[0] == 0)
+        {
+            Multiple_Read_ADXL345(&send_data.ad_dat);
+            Multiple_Read_L3G4200D(&send_data.l3_dat);
+            Multiple_Read_HMC5883(&send_data.hm_dat);
+            Multiple_Read_BMP085(&send_data.bmp_dat);
+
+            uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
+
+            server_conn->rport = UIP_UDP_BUF->srcport;
+            printf ("port: %d\n\r", server_conn->rport);
 #if SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION
-  uip_udp_packet_send(client_conn, &send_data, UIP_APPDATA_SIZE);
+            uip_udp_packet_send(server_conn, &send_data, UIP_APPDATA_SIZE);
 #else /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
-  uip_udp_packet_send(client_conn, &send_data, sizeof(send_data));
+            uip_udp_packet_send(server_conn, &send_data, sizeof(send_data));
 #endif /* SEND_TOO_LARGE_PACKET_TO_TEST_FRAGMENTATION */
+        }
+        memset(&server_conn->ripaddr, 0, sizeof(server_conn->ripaddr));
+        server_conn->rport = 0;
+    }
+    leds_off(LEDS_RED);
 }
 /*---------------------------------------------------------------------------*/
 PROCESS(nine_axis_process, "nine axis process");
@@ -81,25 +102,15 @@ PROCESS_THREAD(nine_axis_process, ev, data)
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 #endif /* UIP_CONF_ROUTER */
 
-
   print_local_addresses();
 
-  uip_ip6addr(&ipaddr,0xaaaa,0,0,0,0,0,0,0x01);
+  server_conn = udp_new(NULL, UIP_HTONS(0), NULL);
+  udp_bind(server_conn, UIP_HTONS(3000));
 
-  client_conn = udp_new(&ipaddr, UIP_HTONS(3000), NULL);
-
-  etimer_set(&et, CLOCK_SECOND / 5);
   while(1) {
-    PROCESS_WAIT_EVENT();
-
-    if(ev == PROCESS_EVENT_TIMER) {
-        Multiple_Read_ADXL345(&send_data.ad_dat);
-        Multiple_Read_L3G4200D(&send_data.l3_dat);
-        Multiple_Read_HMC5883(&send_data.hm_dat);
-        Multiple_Read_BMP085(&send_data.bmp_dat);
-
-        timeout_handler();
-        etimer_reset(&et);
+    PROCESS_YIELD();
+    if(ev == tcpip_event) {
+        tcpip_handler();
     }
   }
 
