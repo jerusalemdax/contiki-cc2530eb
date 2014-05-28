@@ -131,7 +131,11 @@
 #endif
 
 #ifndef JOYSTICK_SENSOR_CONF_ON
-#define JOYSTICK_SENSOR_CONF_ON   1  /* Joystick */
+#define JOYSTICK_SENSOR_CONF_ON   0  /* Joystick */
+#endif
+
+#ifndef AIR_SENSOR_CONF_ON
+#define AIR_SENSOR_CONF_ON 0
 #endif
 
 #define TEMP_SENSOR_CONF_ON     1  /* Temperature */

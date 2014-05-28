@@ -63,3 +63,4 @@ Makefile.target
 *.cc2530eb
 !Makefile.cc2530eb
 cscope.out
+*~

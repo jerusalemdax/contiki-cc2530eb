@@ -34,17 +34,22 @@
  */
 #include "dev/port.h"
 #include "dev/button-sensor.h"
+#include "dev/leds.h"
 #include "dev/watchdog.h"
 /*---------------------------------------------------------------------------*/
 static CC_AT_DATA struct timer debouncetimer;
+static int count;
 /*---------------------------------------------------------------------------*/
 /* Button 1 - SmartRF and cc2531 USB Dongle */
 /*---------------------------------------------------------------------------*/
 static int
 value_b1(int type)
 {
+    int temp = count;
   type;
-  return BUTTON_READ(1) || !timer_expired(&debouncetimer);
+  count = 0;
+  return temp;
+//  return BUTTON_READ(1) || !timer_expired(&debouncetimer);
 }
 /*---------------------------------------------------------------------------*/
 static int
@@ -66,7 +71,7 @@ configure_b1(int type, int value)
 #if !MODEL_CC2531
     P0INP |= 2; /* Tri-state */
 #endif
-    BUTTON_IRQ_ON_PRESS(1);
+    BUTTON_IRQ_ON_RELEASE(1);
     BUTTON_FUNC_GPIO(1);
     BUTTON_DIR_INPUT(1);
     return 1;
@@ -150,7 +155,7 @@ port_1_isr(void) __interrupt(P1INT_VECTOR)
   if(BUTTON_IRQ_CHECK(1)) {
     if(timer_expired(&debouncetimer)) {
       timer_set(&debouncetimer, CLOCK_SECOND / 8);
-      sensors_changed(&button_1_sensor);
+//      sensors_changed(&button_1_sensor);
     }
   }
   if(BUTTON_IRQ_CHECK(2)) {
@@ -179,11 +184,15 @@ port_0_isr(void) __interrupt(P0INT_VECTOR)
 
   /* This ISR is for the entire port. Check if the interrupt was caused by our
    * button's pin. */
+  leds_on(LEDS_GREEN);
   if(BUTTON_IRQ_CHECK(1)) {
-    if(timer_expired(&debouncetimer)) {
-      timer_set(&debouncetimer, CLOCK_SECOND / 8);
-      sensors_changed(&button_sensor);
+      while (!BUTTON_READ(1)) {
+	  if(timer_expired(&debouncetimer)) {
+	      timer_set(&debouncetimer, CLOCK_SECOND / 100);
+	      count ++;
     }
+
+      }
   }
 
   BUTTON_IRQ_FLAG_OFF(1);

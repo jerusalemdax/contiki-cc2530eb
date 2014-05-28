@@ -16,6 +16,7 @@
 #include "dev/button-sensor.h"
 #include "dev/joystick-sensor.h"
 #include "dev/adc-sensor.h"
+#include "dev/air-sensor.h"
 #include "dev/leds-arch.h"
 #include "net/rime.h"
 #include "net/netstack.h"
@@ -251,6 +252,9 @@ main(void) CC_NON_BANKED
 #endif
 #if JOYSTICK_SENSOR_ON
   JOYSTICK_SENSOR_ACTIVATE();
+#endif
+#if AIR_SENSOR_ON
+  AIR_SENSOR_ACTIVATE();
 #endif
 #endif
 

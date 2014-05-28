@@ -40,6 +40,7 @@
 #include "dev/button-sensor.h"
 #include "dev/adc-sensor.h"
 #include "dev/joystick-sensor.h"
+#include "dev/air_sensor.h"
 #include "sys/energest.h"
 
 const struct sensors_sensor *sensors[] = {
@@ -51,6 +52,9 @@ const struct sensors_sensor *sensors[] = {
 #endif
 #if JOYSTICK_SENSOR_ON
     &joystick_sensor,
+#endif
+#if AIR_SENSOR_ON
+    &air_sensor,
 #endif
     0
 };

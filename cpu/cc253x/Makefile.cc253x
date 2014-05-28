@@ -1,10 +1,10 @@
 ### Compiler definitions
-CC       = sdcc
-LD       = sdcc
-AS       = sdcc
-AR       = sdcclib
-OBJCOPY  = objcopy
-STRIP    = strip
+CC       = /home/daniel/opt/sdcc/bin/sdcc
+LD       = /home/daniel/opt/sdcc/bin/sdcc
+AS       = /home/daniel/opt/sdcc/bin/sdcc
+AR       = /home/daniel/opt/sdcc/bin/sdcclib
+OBJCOPY  = /home/daniel/opt/sdcc/bin/objcopy
+STRIP    = /home/daniel/opt/sdcc/bin/strip
 
 ### Hex file conversions
 PACKIHX    = packihx
