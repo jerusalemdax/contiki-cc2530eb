@@ -53,10 +53,13 @@ timeout_handler(void)
     sensor = sensors_find(BUTTON_SENSOR);
     if(sensor)
     {
+	float pm;
 	PRINTF("-------------------\n\r");
 	rv = sensor->value(0);
-	float pm = (float)rv/20.0;
-	PRINTF("PM : %f\n\r", pm);
+	pm = (float)rv/20.0;
+	if( pm == 0)
+	    pm = 0.05;
+	PRINTF("PM : %.2f\n\r", pm);
 	if(uip_ds6_get_global(ADDR_PREFERRED) == NULL) {
 	    return;
 	}

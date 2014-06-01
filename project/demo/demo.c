@@ -57,18 +57,25 @@ AUTOSTART_PROCESSES(&udp_client_process);
 static void
 tcpip_handler(void)
 {
-  leds_on(LEDS_GREEN);
-  if(uip_newdata()) {
-    putstring("0x");
-    puthex(uip_datalen());
-    putstring(" bytes response=0x");
-    puthex((*(uint16_t *) uip_appdata) >> 8);
-    puthex((*(uint16_t *) uip_appdata) & 0xFF);
-    putchar('\n');
-    putchar('\r');
-  }
-  leds_off(LEDS_GREEN);
-  return;
+    leds_on(LEDS_GREEN);
+    if(uip_newdata()) {
+	static char * temp;
+	memset(temp, 0, uip_datalen());
+	memcpy(temp, uip_appdata, uip_datalen());
+	temp[uip_datalen()] = '\0';
+	putstring("length:");
+	puthex(uip_datalen());
+	putchar('\n');
+	putchar('\r');
+	putstring("receive: ");
+//	puthex((*(uint16_t *) uip_appdata) >> 8);
+//	puthex((*(uint16_t *) uip_appdata) & 0xFF);
+	putstring(temp);
+	putchar('\n');
+	putchar('\r');
+    }
+    leds_off(LEDS_GREEN);
+    return;
 }
 /*---------------------------------------------------------------------------*/
 static void
