@@ -55,11 +55,12 @@ timeout_handler(void)
     {
 	PRINTF("-------------------\n\r");
 	rv = sensor->value(0);
-	PRINTF("count : %d\n\r", rv);
+	float pm = (float)rv/20.0;
+	PRINTF("PM : %f\n\r", pm);
 	if(uip_ds6_get_global(ADDR_PREFERRED) == NULL) {
 	    return;
 	}
-	uip_udp_packet_send(g_conn, &rv, sizeof(rv));
+	uip_udp_packet_send(g_conn, &pm, sizeof(pm));
 
     }
     leds_off(LEDS_RED);
