@@ -1,11 +1,7 @@
 #include "dev/port.h"
 #include "dev/air-sensor.h"
 #include "dev/leds.h"
-/*---------------------------------------------------------------------------*/
 static CC_AT_DATA struct timer debouncetimer;
-/*---------------------------------------------------------------------------*/
-/* Button 1 - SmartRF and cc2531 USB Dongle */
-/*---------------------------------------------------------------------------*/
 static int
 value(int type)
 {

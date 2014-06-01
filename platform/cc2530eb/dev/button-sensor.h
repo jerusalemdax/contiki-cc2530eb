@@ -61,7 +61,7 @@
 #define BUTTON2_PIN  3
 #else
 #define BUTTON1_PORT 0
-#define BUTTON1_PIN  5
+#define BUTTON1_PIN  1
 #endif
 
 #ifdef BUTTON_SENSOR_CONF_ON

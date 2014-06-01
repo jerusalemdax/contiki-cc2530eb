@@ -16,15 +16,19 @@
 static char buf[MAX_PAYLOAD_LEN];
 
 /* Our destinations and udp conns. One link-local and one global */
-#define LOCAL_CONN_PORT 3001
-static struct uip_udp_conn *l_conn;
 #if UIP_CONF_ROUTER
-#define GLOBAL_CONN_PORT 3002
+#define GLOBAL_CONN_PORT 1234
 static struct uip_udp_conn *g_conn;
 #endif
 
 static struct sensors_sensor *sensor;
 static int rv;
+
+static char *str;
+static struct etimer et;
+
+static uip_ipaddr_t ipaddr;
+
 
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_client_process, "UDP client process");
@@ -33,105 +37,95 @@ AUTOSTART_PROCESSES(&udp_client_process);
 static void
 tcpip_handler(void)
 {
-  /* leds_on(LEDS_GREEN); */
-  /* if(uip_newdata()) { */
-  /*   putstring("0x"); */
-  /*   puthex(uip_datalen()); */
-  /*   putstring(" bytes response=0x"); */
-  /*   puthex((*(uint16_t *) uip_appdata) >> 8); */
-  /*   puthex((*(uint16_t *) uip_appdata) & 0xFF); */
-  /*   putchar('\n'); */
-  /*   putchar('\r'); */
-  /* } */
-  /* leds_off(LEDS_GREEN); */
-  return;
+  leds_on(LEDS_GREEN);
+  if(uip_newdata()) {
+      str = uip_appdata;
+      str[uip_datalen()] = '\0';
+      printf("Response from the server: '%s'\n\r", str);
+  }
+  leds_off(LEDS_GREEN);
 }
 /*---------------------------------------------------------------------------*/
 static void
 timeout_handler(void)
 {
-  /* static int seq_id; */
-  /* struct uip_udp_conn *this_conn; */
-    PRINTF("test\n\r");
+    leds_on(LEDS_RED);
     sensor = sensors_find(BUTTON_SENSOR);
     if(sensor)
     {
-	leds_on(LEDS_RED);
 	PRINTF("-------------------\n\r");
 	rv = sensor->value(0);
 	PRINTF("count : %d\n\r", rv);
+	if(uip_ds6_get_global(ADDR_PREFERRED) == NULL) {
+	    return;
+	}
+	uip_udp_packet_send(g_conn, &rv, sizeof(rv));
+
     }
-  /* memset(buf, 0, MAX_PAYLOAD_LEN); */
-  /* seq_id++; */
-
-  /* /\* evens / odds *\/ */
-  /* if(seq_id & 0x01) { */
-  /*   this_conn = l_conn; */
-  /* } else { */
-  /*   this_conn = g_conn; */
-  /*   if(uip_ds6_get_global(ADDR_PREFERRED) == NULL) { */
-  /*     return; */
-  /*   } */
-  /* } */
-
-  /* PRINTF("Client to: "); */
-  /* PRINT6ADDR(&this_conn->ripaddr); */
-
-  /* memcpy(buf, &seq_id, sizeof(seq_id)); */
-
-  /* PRINTF(" Remote Port %u,", UIP_HTONS(this_conn->rport)); */
-  /* PRINTF(" (msg=0x%04x), %u bytes\n\r", *(uint16_t *) buf, sizeof(seq_id)); */
-
-  /* uip_udp_packet_send(this_conn, buf, sizeof(seq_id)); */
-  leds_off(LEDS_RED);
+    leds_off(LEDS_RED);
 }
+static int i;
+static uint8_t state;
+static void print_local_addresses(void)
+{
+  PRINTF("Client IPv6 addresses:\n\r");
+  for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+    state = uip_ds6_if.addr_list[i].state;
+    if(uip_ds6_if.addr_list[i].isused &&
+       (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
+      PRINT6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
+      PRINTF("\n\r");
+    }
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+#if UIP_CONF_ROUTER
+static void
+set_global_address(void)
+{
+
+    uip_ipaddr_t ipaddr;
+    uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+    uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
+    uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+}
+#endif /* UIP_CONF_ROUTER */
+
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
 {
-  static struct etimer et;
 
-  /* uip_ipaddr_t ipaddr; */
+    PROCESS_BEGIN();
+    PRINTF("UDP client process started\n\r");
+    
+#if UIP_CONF_ROUTER
+    set_global_address();
+#endif
 
-  PROCESS_BEGIN();
-  PRINTF("UDP client process started\n\r");
+    print_local_addresses();
 
-  /* uip_ip6addr(&ipaddr, 0xfe80, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd0e4); */
-  /* /\* new connection with remote host *\/ */
-  /* l_conn = udp_new(&ipaddr, UIP_HTONS(3000), NULL); */
-  /* if(!l_conn) { */
-  /*   PRINTF("udp_new l_conn error.\n\r"); */
-  /* } */
-  /* udp_bind(l_conn, UIP_HTONS(LOCAL_CONN_PORT)); */
+    uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
 
-  /* PRINTF("Link-Local connection with "); */
-  /* PRINT6ADDR(&l_conn->ripaddr); */
-  /* PRINTF(" local/remote port %u/%u\n\r", */
-  /*        UIP_HTONS(l_conn->lport), UIP_HTONS(l_conn->rport)); */
-
-  /* uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x0260, 0xd0e4); */
-  /* g_conn = udp_new(&ipaddr, UIP_HTONS(3000), NULL); */
-  /* if(!g_conn) { */
-  /*   PRINTF("udp_new g_conn error.\n\r"); */
-  /* } */
-  /* udp_bind(g_conn, UIP_HTONS(GLOBAL_CONN_PORT)); */
-
-  /* PRINTF("Global connection with "); */
-  /* PRINT6ADDR(&g_conn->ripaddr); */
-  /* PRINTF(" local/remote port %u/%u\n\r", */
-  /*        UIP_HTONS(g_conn->lport), UIP_HTONS(g_conn->rport)); */
-
-  etimer_set(&et, SEND_INTERVAL);
-
-  while(1) {
-    PROCESS_YIELD();
-    if(etimer_expired(&et)) {
-      timeout_handler();
-      etimer_restart(&et);
-    } else if(ev == tcpip_event) {
-      /* tcpip_handler(); */
+    g_conn = udp_new(&ipaddr, UIP_HTONS(1234), NULL);
+    if(!g_conn)
+    {
+	PRINTF("udp_new g_conn error.\n\r");
     }
-  }
+    udp_bind(g_conn, UIP_HTONS(GLOBAL_CONN_PORT));
 
-  PROCESS_END();
+    etimer_set(&et, SEND_INTERVAL);
+
+    while(1) {
+	PROCESS_YIELD();
+	if(etimer_expired(&et)) {
+	    timeout_handler();
+	    etimer_restart(&et);
+	} else if(ev == tcpip_event) {
+	    tcpip_handler();
+	}
+    }
+          
+    PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
